@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Review {{ job.locksmith.name }}{% endblock %}
+
+{% block content %}
+<div class="review-container">
+    <div class="review-header">
+        <h1>Write a Review</h1>
+        <div class="locksmith-info">
+            {% if job.locksmith.profile_photo %}
+                <img src="{{ url_for('static', filename='uploads/' + job.locksmith.profile_photo) }}" 
+                     alt="{{ job.locksmith.name }}" class="profile-photo"
+                     onerror="this.src='{{ url_for('static', filename='images/default_profile.jpg') }}'">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default_profile.jpg') }}" 
+                     alt="{{ job.locksmith.name }}" class="profile-photo">
+            {% endif %}
+            <h2>{{ job.locksmith.name }}</h2>
+        </div>
+    </div>
+
+    <form id="reviewForm" onsubmit="submitReview(event)" class="review-form">
+        <div class="form-group">
+            <label>Rating *</label>
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" required>
+                <label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4">
+                <label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3">
+                <label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2">
+                <label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1">
+                <label for="star1">★</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Your Name (optional)</label>
+            <input type="text" name="reviewer_name">
+        </div>
+        
+        <div class="form-group">
+            <label>Your Review *</label>
+            <textarea name="comment" rows="4" required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit">Submit Review</button>
+    </form>
+</div>
+
+<style>
+.review-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.review-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.locksmith-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.profile-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 32px;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: #00a082;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background: #008c70;
+}
+</style>
+
+<script>
+function submitReview(event) {
+    event.preventDefault();
+    const form = event.target;
+    
+    const data = {
+        rating: parseInt(form.rating.value),
+        reviewer_name: form.reviewer_name.value.trim(),
+        comment: form.comment.value.trim()
+    };
+
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Thank you for your review!');
+            window.location.href = `/locksmith/reviews/{{ job.locksmith_id }}`;
+        } else {
+            throw new Error(data.error || 'Failed to submit review');
+        }
+    })
+    .catch(error => {
+        alert('Error submitting review: ' + error.message);
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,1105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locksmith.name }} - Reviews{% endblock %}
+
+{% block styles %}
+<style>
+    .reviews-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .header-info h1 {
+        font-size: 36px;
+        margin: 0 0 10px 0;
+        color: #333;
+    }
+
+    .rating-section {
+        margin-bottom: 40px;
+    }
+
+    .rating-top {
+        display: flex;
+        align-items: baseline;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .rating-number {
+        font-size: 48px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .stars {
+        display: flex;
+        gap: 5px;
+    }
+
+    .star {
+        color: #FFD700;
+        font-size: 24px;
+    }
+
+    .review-count {
+        color: #666;
+        font-size: 18px;
+    }
+
+    .rating-bars {
+        margin-bottom: 40px;
+    }
+
+    .rating-bar {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .rating-label {
+        width: 100px;
+        font-size: 18px;
+        color: #666;
+    }
+
+    .bar {
+        flex: 1;
+        height: 8px;
+        background: #eee;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .fill {
+        height: 100%;
+        background: #4CAF50;
+        border-radius: 4px;
+    }
+
+    .count {
+        width: 30px;
+        text-align: right;
+        font-size: 18px;
+        color: #666;
+    }
+
+    .write-review-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-bottom: 40px;
+    }
+
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .reviewer-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .reviewer-name {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .verified-badge {
+        background: #E8F5E9;
+        color: #4CAF50;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 14px;
+    }
+
+    .review-date {
+        color: #666;
+    }
+
+    .review-stars {
+        margin-bottom: 15px;
+    }
+
+    .review-text {
+        margin-bottom: 15px;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .review-meta {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .review-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-delete {
+        background: none;
+        border: none;
+        padding: 4px 8px;
+        cursor: pointer;
+        color: #dc3545;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .btn-delete:hover {
+        opacity: 1;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .floating-eta-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        padding: 12px 20px;
+        z-index: 1000;
+    }
+
+    .eta-content {
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .eta-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .eta-status {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .eta-time {
+        font-size: 18px;
+        font-weight: 600;
+        color: #00a082;
+    }
+
+    .track-button {
+        background: #00a082;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .track-button:hover {
+        background: #008c70;
+    }
+
+    .arrow {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .reviews-container {
+        padding-bottom: 80px;
+    }
+
+    .back-to-tracking {
+        margin-bottom: 20px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #f1f3f5;
+        color: #666;
+        text-decoration: none;
+        border-radius: 20px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .back-button:hover {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .arrow-left {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .modal-container {
+        position: relative;
+        background: white;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 12px;
+        padding: 24px;
+        z-index: 1001;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        color: #666;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 4px;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 24px;
+        color: #ddd;
+        cursor: pointer;
+    }
+
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    .btn-primary {
+        background: #00a082;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .write-review-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: #00a082;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-bottom: 30px;
+    }
+
+    .review-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .review-modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .review-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    /* Dialog styles */
+    .review-dialog {
+        padding: 0;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .review-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .review-dialog form {
+        padding: 24px;
+    }
+
+    .dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    /* Keep your existing form styles */
+
+    .simple-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .simple-modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .simple-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .review-form-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .review-form-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-submit {
+        background: #00a082;
+        color: white;
+    }
+
+    .btn-cancel, .btn-submit {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reviews-container">
+    {% if job and job.status == 'active' %}
+    <div class="back-to-tracking">
+        <a href="{{ url_for('customer.tracking', tracking_id=job.tracking_id) }}" class="back-button">
+            <span class="arrow-left">←</span>
+            Back to Tracking
+        </a>
+    </div>
+    {% endif %}
+    <div class="header-section">
+        <img src="{{ url_for('static', filename='uploads/' + locksmith.profile_photo) }}" 
+             alt="{{ locksmith.name }}" 
+             class="profile-photo">
+        <div class="header-info">
+            <h1>{{ locksmith.name }}</h1>
+        </div>
+    </div>
+
+    {% if is_admin %}
+    <div class="admin-actions">
+        <button onclick="generateReviews()" class="btn-generate">Generate Sample Reviews</button>
+    </div>
+    {% endif %}
+
+    <div class="rating-section">
+        <div class="rating-top">
+            <span class="rating-number">{{ "%.1f"|format(avg_rating) }}</span>
+            <div class="stars">
+                {% for i in range(5) %}
+                <span class="star">★</span>
+                {% endfor %}
+            </div>
+            <span class="review-count">{{ total_reviews }} reviews</span>
+        </div>
+
+        <div class="rating-bars">
+            {% for rating in range(5, 0, -1) %}
+            <div class="rating-bar">
+                <span class="rating-label">{{ rating }} stars</span>
+                <div class="bar">
+                    <div class="fill" style="width: {{ (rating_counts[rating] / total_reviews * 100)|int if total_reviews > 0 else 0 }}%"></div>
+                </div>
+                <span class="count">{{ rating_counts[rating] }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if not is_owner and not is_admin %}
+    <button onclick="openReviewForm()" class="write-review-btn">Write a Review</button>
+
+    <div id="reviewFormModal" class="review-form-modal" style="display: none;">
+        <div class="review-form-content">
+            <h3>Write a Review</h3>
+            <form onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label>Rating *</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Name (optional)</label>
+                    <input type="text" name="reviewer_name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Review *</label>
+                    <textarea name="comment" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeReviewForm()" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    .review-form-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    .review-form-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-submit {
+        background: #00a082;
+        color: white;
+    }
+
+    .btn-cancel, .btn-submit {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    </style>
+
+    <script>
+    function openReviewForm() {
+        document.getElementById('reviewFormModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviewForm() {
+        document.getElementById('reviewFormModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        
+        const data = {
+            rating: parseInt(form.rating.value),
+            reviewer_name: form.reviewer_name.value.trim(),
+            comment: form.comment.value.trim()
+        };
+
+        fetch(`/locksmith/reviews/{{ locksmith.id }}/submit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeReviewForm();
+                alert('Thank you for your review!');
+                location.reload();
+            } else {
+                throw new Error(data.error || 'Failed to submit review');
+            }
+        })
+        .catch(error => {
+            alert('Error submitting review: ' + error.message);
+        });
+    }
+
+    // Auto-show review form if coming from job completion
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackingId = urlParams.get('tracking_id');
+        if (trackingId && window.location.hash === '#write-review') {
+            openReviewForm();
+        }
+    });
+    </script>
+    {% endif %}
+
+    <div class="reviews-list">
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="review-card" data-review-id="{{ review.id }}">
+            <div class="reviewer-header">
+                <div class="reviewer">
+                    <strong>{{ review.reviewer_name or 'Anonymous' }}</strong>
+                    {% if review.verified %}
+                    <span class="verified-badge">✓ Verified</span>
+                    {% endif %}
+                </div>
+                <div class="review-actions">
+                    <div class="review-date">{{ review.review_date.strftime('%B %d, %Y') }}</div>
+                    {% if is_admin %}
+                    <button onclick="deleteReview({{ review.id }})" class="btn-delete">
+                        <i class="icon">🗑️</i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="stars">
+                {% for i in range(5) %}
+                    <span class="star {% if i < review.rating %}filled{% endif %}">
+                        {% if i < review.rating %}★{% else %}☆{% endif %}
+                    </span>
+                {% endfor %}
+            </div>
+            {% if review.comment %}
+            <div class="review-text">{{ review.comment }}</div>
+            {% endif %}
+            <div class="review-meta">
+                <span class="job-type">{{ review.job_type }}</span>
+                <span class="location">{{ review.location }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-reviews">
+            <p>No reviews yet. Be the first to review {{ locksmith.name }}!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackingId = urlParams.get('tracking_id');
+    if (trackingId && window.location.hash === '#write-review') {
+        openReviewDialog();
+    }
+});
+
+function openReviewDialog() {
+    const dialog = document.getElementById('reviewDialog');
+    if (dialog) {
+        dialog.showModal();
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeReviewDialog() {
+    const dialog = document.getElementById('reviewDialog');
+    if (dialog) {
+        dialog.close();
+        document.body.style.overflow = '';
+    }
+}
+
+function handleReviewSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    
+    const data = {
+        rating: parseInt(form.rating.value),
+        reviewer_name: form.reviewer_name.value.trim(),
+        comment: form.comment.value.trim()
+    };
+
+    fetch(`/locksmith/reviews/{{ locksmith.id }}/submit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeReviewDialog();
+            alert('Thank you for your review!');
+            location.reload();
+        } else {
+            throw new Error(data.error || 'Failed to submit review');
+        }
+    })
+    .catch(error => {
+        console.error('Review submission error:', error);
+        alert('Error submitting review: ' + error.message);
+    });
+}
+
+function deleteReview(reviewId) {
+    if (!confirm('Are you sure you want to delete this review?')) {
+        return;
+    }
+
+    fetch(`/admin/reviews/${reviewId}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the review card from the DOM
+            const reviewCard = document.querySelector(`.review-card[data-review-id="${reviewId}"]`);
+            if (reviewCard) {
+                reviewCard.remove();
+                
+                // Update review count
+                const totalReviews = document.querySelector('.review-count');
+                if (totalReviews) {
+                    const currentCount = parseInt(totalReviews.textContent);
+                    totalReviews.textContent = `${currentCount - 1} reviews`;
+                }
+                
+                // Show success message
+                alert('Review deleted successfully');
+                
+                // Reload page to update stats
+                location.reload();
+            }
+        } else {
+            throw new Error(data.error || 'Failed to delete review');
+        }
+    })
+    .catch(error => {
+        alert('Error deleting review: ' + error.message);
+    });
+}
+
+function showMessage(message, isError = false) {
+    const messageEl = document.getElementById('status-message');
+    messageEl.textContent = message;
+    messageEl.style.background = isError ? '#dc3545' : '#4CAF50';
+    messageEl.classList.add('show');
+    
+    setTimeout(() => {
+        messageEl.classList.remove('show');
+    }, 3000);
+}
+
+function generateReviews() {
+    if (!confirm('Generate sample reviews for this locksmith?')) {
+        return;
+    }
+    
+    fetch(`/admin/generate-reviews/{{ locksmith.id }}`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Failed to generate reviews');
+        }
+    });
+}
+</script>
+
+<style>
+/* Add this to your existing styles */
+.btn-submit-review {
+    background: #00a082;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 20px 0;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #666;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-cancel {
+    background: #f1f3f5;
+    color: #666;
+}
+
+.btn-submit {
+    background: #00a082;
+    color: white;
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: #666;
+}
+
+.admin-actions {
+    margin: 20px 0;
+}
+
+.btn-generate {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-generate:hover {
+    background: #5a6268;
+}
+</style>
+
+{% if job and job.status == 'active' %}
+<script>
+function updateETA() {
+    fetch(`/track/api/location/{{ job.tracking_id }}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('eta').textContent = data.eta;
+            }
+        });
+}
+
+// Update ETA every 30 seconds
+updateETA();
+setInterval(updateETA, 30000);
+</script>
+{% endif %}
+{% endblock %} 

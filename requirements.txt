@@ -1,0 +1,11 @@
+Flask==2.2.5
+Werkzeug==2.2.3
+Flask-SQLAlchemy==3.0.2
+SQLAlchemy==1.4.41
+Flask-Migrate==3.1.0
+twilio==7.0.0
+python-dotenv==0.19.0
+requests==2.26.0
+Pillow==9.5.0
+pyngrok==5.1.0
+googlemaps==4.6.0

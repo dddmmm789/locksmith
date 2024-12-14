@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Applications{% endblock %}
+
+{% block content %}
+<div class="applications-container">
+    <h1>Pending Applications</h1>
+    
+    {% if applications %}
+    <div class="applications-grid">
+        {% for app in applications %}
+        <div class="application-card" data-id="{{ app.id }}">
+            <div class="applicant-info">
+                {% if app.profile_photo %}
+                <div class="photo-container">
+                    <img src="{{ url_for('static', filename='uploads/' + app.profile_photo) }}" 
+                         alt="{{ app.name }}" class="applicant-photo">
+                </div>
+                {% endif %}
+                <div class="details">
+                    <h3>{{ app.name }}</h3>
+                    <p>{{ app.phone_number }}</p>
+                    <p>{{ app.email or 'No email provided' }}</p>
+                    <p class="application-date">
+                        Applied: 
+                        {% if app.application_date %}
+                            {{ app.application_date.strftime('%B %d, %Y') }}
+                        {% else %}
+                            Date not available
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="professional-details">
+                <p><strong>License:</strong> {{ app.license_number or 'Not provided' }}</p>
+                <p><strong>Experience:</strong> {{ app.years_experience or 0 }} years</p>
+                <p><strong>Service Areas:</strong> {{ app.service_areas or 'Not specified' }}</p>
+            </div>
+            
+            <div class="review-section">
+                <textarea placeholder="Add notes (optional)" class="review-notes"></textarea>
+                <div class="action-buttons">
+                    <button onclick="reviewApplication({{ app.id }}, 'approve')" class="btn-approve">
+                        Approve
+                    </button>
+                    <button onclick="reviewApplication({{ app.id }}, 'reject')" class="btn-reject">
+                        Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-applications">
+        <p>No pending applications</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.applications-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.application-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.applicant-info {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.photo-container {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.applicant-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.details {
+    flex-grow: 1;
+}
+
+.details h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.details p {
+    margin: 4px 0;
+    color: #666;
+}
+
+.professional-details {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.review-section {
+    display: grid;
+    gap: 16px;
+}
+
+.review-notes {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-height: 80px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-approve, .btn-reject {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    flex: 1;
+}
+
+.btn-approve {
+    background: #28a745;
+    color: white;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+}
+
+.application-date {
+    color: #888;
+    font-size: 0.9em;
+}
+</style>
+
+<script>
+function reviewApplication(id, action) {
+    if (!confirm(`Are you sure you want to ${action} this application?`)) {
+        return;
+    }
+    
+    const card = document.querySelector(`.application-card[data-id="${id}"]`);
+    const notes = card.querySelector('.review-notes').value;
+    
+    fetch(`/admin/application/${id}/review`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=${action}&notes=${encodeURIComponent(notes)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            card.remove();
+            if (document.querySelectorAll('.application-card').length === 0) {
+                location.reload();
+            }
+        } else {
+            alert(data.error || 'Failed to process application');
+        }
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Signup{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-options">
+        <a href="{{ url_for('locksmith.signup') }}" class="auth-tab active">Sign Up</a>
+        <a href="{{ url_for('locksmith.login') }}" class="auth-tab">Login</a>
+    </div>
+
+    <div class="signup-container">
+        <h1>Join Our Locksmith Network</h1>
+        
+        <div id="phone-verification" {% if not locksmith.phone_verified %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+            <div class="form-section">
+                <h2>Phone Verification</h2>
+                <div class="form-group">
+                    <label for="phone_number">Phone Number *</label>
+                    <input type="tel" id="phone_number" name="phone_number" required>
+                </div>
+                <button type="button" onclick="verifyWithText()" class="btn-primary">Verify with Text</button>
+                
+                <div id="otp-section" style="display: none;">
+                    <div class="form-group">
+                        <label for="otp">Enter Code</label>
+                        <input type="text" id="otp" name="otp" maxlength="6">
+                    </div>
+                    <button type="button" onclick="verifyOTP()" class="btn-primary">Verify Code</button>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="signup-form" id="main-signup-form" style="display: none;" onsubmit="return validateForm()">
+            <input type="hidden" id="signup_phone_number" name="phone_number">
+            <div class="form-section">
+                <h2>Basic Information</h2>
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="profile_photo">Profile Photo</label>
+                    <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Application</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.auth-options {
+    display: flex;
+    margin-bottom: 24px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    color: #666;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.auth-tab:hover {
+    background: rgba(0, 160, 130, 0.1);
+    color: #00a082;
+}
+
+.auth-tab.active {
+    background: #00a082;
+    color: white;
+}
+
+.signup-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.form-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="number"],
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.business-hours {
+    display: grid;
+    gap: 15px;
+}
+
+.day-hours {
+    display: grid;
+    grid-template-columns: 100px 1fr 30px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+.submit-btn {
+    background: #00a082;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background: #008c70;
+}
+
+.btn-primary {
+    background: #00a082;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.btn-primary:hover {
+    background: #008c70;
+}
+</style>
+
+<script>
+function verifyWithText() {
+    const phone = document.getElementById('phone_number').value;
+    if (!phone) {
+        alert('Please enter your phone number');
+        return;
+    }
+    
+    fetch('/locksmith/signup/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `phone_number=${encodeURIComponent(phone)}`
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            document.getElementById('otp-section').style.display = 'block';
+            alert('For testing, use code: 123456');
+        } else {
+            alert(data.error || 'Failed to send verification code');
+        }
+    })
+    .catch(error => {
+        alert('Error sending verification code');
+    });
+}
+
+function verifyOTP() {
+    const phone = document.getElementById('phone_number').value;
+    const otp = document.getElementById('otp').value;
+    
+    fetch('/locksmith/signup/verify-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `phone_number=${encodeURIComponent(phone)}&otp=${encodeURIComponent(otp)}`
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error('Invalid JSON response');
+            }
+        });
+    })
+    .then(data => {
+        const mainPhoneInput = document.getElementById('signup_phone_number');
+        mainPhoneInput.value = phone;
+        
+        document.getElementById('phone-verification').style.display = 'none';
+        document.getElementById('main-signup-form').style.display = 'block';
+    })
+    .catch(error => {
+        alert('Error verifying code');
+    });
+}
+
+function validateForm() {
+    const phone = document.getElementById('signup_phone_number').value;
+    const name = document.getElementById('name').value;
+    
+    if (!phone || !name) {
+        alert('Please complete phone verification and provide your name');
+        return false;
+    }
+    
+    const formData = new FormData(document.getElementById('main-signup-form'));
+    for (let [key, value] of formData.entries()) {
+    }
+    
+    return true;
+}
+</script>
+{% endblock %} 
