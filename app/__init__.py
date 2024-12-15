@@ -1,23 +1,27 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config
-from .extensions import db
+from flask_migrate import Migrate
+from config import Config
 
-def create_app(config_class=Config):
+db = SQLAlchemy()
+migrate = Migrate()
+
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    app.config.from_object(Config)
     
-    # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     
     # Register blueprints
-    from .routes import locksmith_routes, customer_routes, admin_routes
-    app.register_blueprint(locksmith_routes.bp)
-    app.register_blueprint(customer_routes.bp)
-    app.register_blueprint(admin_routes.bp)
+    from app.routes import main
+    from app.routes.locksmith import bp as locksmith_bp
+    from app.routes.customer import bp as customer_bp
+    from app.routes.admin import bp as admin_bp
     
-    # Create database tables
-    with app.app_context():
-        db.create_all()
+    app.register_blueprint(main)
+    app.register_blueprint(locksmith_bp)
+    app.register_blueprint(customer_bp)
+    app.register_blueprint(admin_bp)
     
     return app

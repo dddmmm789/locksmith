@@ -1,40 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Locksmith Profile Setup</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Create Your Profile</h1>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <form method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="phone_number">Phone Number</label>
-                <input type="tel" id="phone_number" name="phone_number" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="profile_photo">Profile Photo</label>
-                <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Create Profile</button>
-        </form>
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="profile-header mb-4">
+        <h2>{{ locksmith.business_name }}</h2>
+        <div class="rating">
+            {% for i in range(5) %}
+                <span class="star {% if i < locksmith.average_rating %}filled{% endif %}">★</span>
+            {% endfor %}
+            <span class="rating-count">({{ locksmith.review_count }} reviews)</span>
+        </div>
     </div>
-</body>
-</html> 
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Business Information</h3>
+                    <p><strong>Phone:</strong> {{ locksmith.phone }}</p>
+                    <p><strong>Service Area:</strong> {{ locksmith.service_area }}</p>
+                    <p><strong>Services:</strong></p>
+                    <ul>
+                        {% for service in locksmith.services %}
+                        <li>{{ service }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Recent Reviews</h3>
+                    {% for review in recent_reviews %}
+                    <div class="review-item">
+                        <div class="rating">
+                            {% for i in range(5) %}
+                                <span class="star {% if i < review.rating %}filled{% endif %}">★</span>
+                            {% endfor %}
+                        </div>
+                        <p class="review-text">{{ review.comment }}</p>
+                        <small class="text-muted">{{ review.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container terms-container">
+    <h1>Terms and Conditions</h1>
+    <p class="effective-date">Effective Date: 12.15.2024</p>
+
+    <div class="terms-content">
+        <!-- Terms content -->
+        {{ terms_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+.terms-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.terms-content {
+    line-height: 1.6;
+}
+
+.effective-date {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+</style>
+{% endblock %}

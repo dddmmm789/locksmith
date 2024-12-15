@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Service Status</h2>
+    <div class="status-card card mb-4">
+        <div class="card-body">
+            <h3>Job #{{ job.id }}</h3>
+            <div class="status-timeline">
+                <div class="status-item {% if job.status >= 1 %}active{% endif %}">
+                    <div class="status-dot"></div>
+                    <div class="status-text">Request Received</div>
+                </div>
+                <div class="status-item {% if job.status >= 2 %}active{% endif %}">
+                    <div class="status-dot"></div>
+                    <div class="status-text">Locksmith Assigned</div>
+                </div>
+                <div class="status-item {% if job.status >= 3 %}active{% endif %}">
+                    <div class="status-dot"></div>
+                    <div class="status-text">En Route</div>
+                </div>
+                <div class="status-item {% if job.status >= 4 %}active{% endif %}">
+                    <div class="status-dot"></div>
+                    <div class="status-text">Service Complete</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="map" style="height: 400px;" class="mb-4"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script>
+let map;
+let marker;
+
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: { lat: {{ job.latitude }}, lng: {{ job.longitude }} }
+    });
+    
+    marker = new google.maps.Marker({
+        position: { lat: {{ job.latitude }}, lng: {{ job.longitude }} },
+        map: map,
+        title: 'Service Location'
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initMap);
+</script>
+{% endblock %}

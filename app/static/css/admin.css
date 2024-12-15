@@ -1,0 +1,46 @@
+.stats-card {
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+.stats-card .card-title {
+    opacity: 0.8;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stats-card .card-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.table th {
+    border-top: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.btn-success {
+    background-color: #00a082;
+    border-color: #00a082;
+}
+
+.btn-success:hover {
+    background-color: #008c72;
+    border-color: #008c72;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+.date-picker {
+    max-width: 200px;
+}

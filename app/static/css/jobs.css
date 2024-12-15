@@ -1,0 +1,28 @@
+.job-list .card {
+    transition: transform 0.2s;
+}
+
+.job-list .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+#map {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    max-width: 200px;
+}

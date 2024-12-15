@@ -1,2 +1,7 @@
-from .locksmith_routes import bp as locksmith_bp
-from .customer_routes import bp as customer_bp 
+from flask import Blueprint, redirect, url_for
+
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def index():
+    return redirect(url_for('locksmith.dashboard'))

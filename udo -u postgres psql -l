@@ -1,0 +1,10 @@
+[0;1;32m●[0m postgresql.service - PostgreSQL RDBMS
+     Loaded: loaded (]8;;file://gbox-locksmith/usr/lib/systemd/system/postgresql.service/usr/lib/systemd/system/postgresql.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (exited)[0m since Sun 2024-12-15 13:09:23 UTC; 4h 6min ago
+ Invocation: 4cdddd1a95154456b6a31575f9b71562
+   Main PID: 922 (code=exited, status=0/SUCCESS)
+   Mem peak: 1.5M
+        CPU: 6ms
+
+Dec 15 13:09:23 gbox-locksmith systemd[1]: Starting postgresql.service - PostgreSQL RDBMS...
+Dec 15 13:09:23 gbox-locksmith systemd[1]: Finished postgresql.service - PostgreSQL RDBMS.

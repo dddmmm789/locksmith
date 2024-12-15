@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Verify OTP</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label>Enter OTP sent to your phone</label>
+                    <input type="text" name="otp" class="form-control" required pattern="[0-9]{6}" maxlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary">Verify</button>
+                <button type="button" class="btn btn-secondary" onclick="resendOTP()">Resend OTP</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+function resendOTP() {
+    fetch('/locksmith/resend-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('New OTP sent!');
+        } else {
+            alert('Error sending OTP: ' + data.error);
+        }
+    });
+}
+</script>
+{% endblock %}

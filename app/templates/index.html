@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <h1>Welcome to GBox Solutions</h1>
+        <p class="lead">Connecting customers with trusted locksmiths</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('locksmith.signup') }}" class="btn btn-primary btn-lg">Join as Locksmith</a>
+            <a href="{{ url_for('customer.track') }}" class="btn btn-outline-primary btn-lg">Track Service</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Trusted Service</h3>
+                    <p>All locksmiths are verified and background-checked</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Real-time Tracking</h3>
+                    <p>Know exactly when help will arrive</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-star"></i>
+                    <h3>Verified Reviews</h3>
+                    <p>Read authentic customer feedback</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #00a082 0%, #006a56 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.cta-buttons {
+    margin-top: 40px;
+}
+
+.cta-buttons .btn {
+    margin: 0 10px;
+}
+
+.features-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: #00a082;
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %}

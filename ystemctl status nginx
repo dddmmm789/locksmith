@@ -1,0 +1,24 @@
+[0;1;32m●[0m locksmith.service - Locksmith Gunicorn daemon
+     Loaded: loaded (]8;;file://gbox-locksmith/etc/systemd/system/locksmith.service/etc/systemd/system/locksmith.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Sun 2024-12-15 14:36:56 UTC; 37min ago
+ Invocation: 40bb0a37f1bf459e895c9c4a053d5009
+   Main PID: 3386 (gunicorn)
+      Tasks: 4 (limit: 1109)
+     Memory: 133.2M (peak: 133.5M)
+        CPU: 2.843s
+     CGroup: /system.slice/locksmith.service
+             ├─[0;38;5;245m3386 /home/deploy/locksmith/venv/bin/python3 /home/deploy/locksmith/venv/bin/gunicorn --workers 3 --bind unix:locksmith.sock -m 007 run:app --log-level debug[0m
+             ├─[0;38;5;245m3387 /home/deploy/locksmith/venv/bin/python3 /home/deploy/locksmith/venv/bin/gunicorn --workers 3 --bind unix:locksmith.sock -m 007 run:app --log-level debug[0m
+             ├─[0;38;5;245m3388 /home/deploy/locksmith/venv/bin/python3 /home/deploy/locksmith/venv/bin/gunicorn --workers 3 --bind unix:locksmith.sock -m 007 run:app --log-level debug[0m
+             └─[0;38;5;245m3389 /home/deploy/locksmith/venv/bin/python3 /home/deploy/locksmith/venv/bin/gunicorn --workers 3 --bind unix:locksmith.sock -m 007 run:app --log-level debug[0m
+
+Dec 15 14:36:56 gbox-locksmith gunicorn[3386]: [2024-12-15 14:36:56 +0000] [3386] [DEBUG] Arbiter booted
+Dec 15 14:36:56 gbox-locksmith gunicorn[3386]: [2024-12-15 14:36:56 +0000] [3386] [INFO] Listening at: unix:locksmith.sock (3386)
+Dec 15 14:36:56 gbox-locksmith gunicorn[3386]: [2024-12-15 14:36:56 +0000] [3386] [INFO] Using worker: sync
+Dec 15 14:36:56 gbox-locksmith gunicorn[3387]: [2024-12-15 14:36:56 +0000] [3387] [INFO] Booting worker with pid: 3387
+Dec 15 14:36:56 gbox-locksmith gunicorn[3388]: [2024-12-15 14:36:56 +0000] [3388] [INFO] Booting worker with pid: 3388
+Dec 15 14:36:56 gbox-locksmith gunicorn[3389]: [2024-12-15 14:36:56 +0000] [3389] [INFO] Booting worker with pid: 3389
+Dec 15 14:36:56 gbox-locksmith gunicorn[3386]: [2024-12-15 14:36:56 +0000] [3386] [DEBUG] 3 workers
+Dec 15 14:36:58 gbox-locksmith gunicorn[3387]: 'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+Dec 15 14:36:58 gbox-locksmith gunicorn[3388]: 'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+Dec 15 14:36:58 gbox-locksmith gunicorn[3389]: 'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.

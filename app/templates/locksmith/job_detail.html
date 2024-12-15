@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Job #{{ job.tracking_id }}</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Customer:</strong> {{ job.customer_name }}</p>
+                    <p><strong>Phone:</strong> {{ job.customer_phone }}</p>
+                    <p><strong>Address:</strong> {{ job.address }}</p>
+                    <p><strong>Service:</strong> {{ job.service_type }}</p>
+                    <p><strong>Status:</strong> {{ job.status|title }}</p>
+                </div>
+                <div class="col-md-6">
+                    <div id="map" style="height: 200px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons mb-4">
+        {% if job.status == 'assigned' %}
+        <button class="btn btn-primary" onclick="startJob()">Start Job</button>
+        {% elif job.status == 'in_progress' %}
+        <button class="btn btn-success" onclick="completeJob()">Complete Job</button>
+        {% endif %}
+        <button class="btn btn-secondary" onclick="sendTrackingLink()">Send Tracking Link</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}"></script>
+<script src="{{ url_for('static', filename='js/job_detail.js') }}"></script>
+{% endblock %}

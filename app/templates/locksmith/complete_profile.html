@@ -1,62 +1,17 @@
 {% extends "base.html" %}
-
-{% block title %}Complete Your Profile{% endblock %}
-
 {% block content %}
-<div class="profile-container">
-    <h1>Complete Your Profile</h1>
-    
-    <form method="POST" class="profile-form">
-        <div class="form-section">
-            <h2>Professional Details</h2>
-            <div class="form-group">
-                <label for="license_number">License Number</label>
-                <input type="text" id="license_number" name="license_number">
-            </div>
-            
-            <div class="form-group">
-                <label for="years_experience">Years of Experience</label>
-                <input type="number" id="years_experience" name="years_experience" min="0">
-            </div>
-            
-            <div class="form-group">
-                <label for="service_areas">Service Areas</label>
-                <select id="service_areas" name="service_areas" multiple>
-                    <option value="Manhattan">Manhattan</option>
-                    <option value="Brooklyn">Brooklyn</option>
-                    <option value="Queens">Queens</option>
-                    <option value="Bronx">Bronx</option>
-                    <option value="Staten Island">Staten Island</option>
-                </select>
-            </div>
+<div class="container">
+    <h2>Complete Your Profile</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" name="business_name" class="form-control" required>
         </div>
-
-        <div class="form-section">
-            <h2>Business Hours</h2>
-            <div class="business-hours">
-                {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-                <div class="day-hours">
-                    <label>{{ day }}</label>
-                    <select name="hours_{{ day|lower }}_start">
-                        <option value="24/7">24/7</option>
-                        {% for hour in range(0, 24) %}
-                        <option value="{{ '%02d'|format(hour) }}:00">{{ '%02d'|format(hour) }}:00</option>
-                        {% endfor %}
-                    </select>
-                    to
-                    <select name="hours_{{ day|lower }}_end">
-                        <option value="24/7">24/7</option>
-                        {% for hour in range(0, 24) %}
-                        <option value="{{ '%02d'|format(hour) }}:00">{{ '%02d'|format(hour) }}:00</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="phone" class="form-control" required>
         </div>
-
-        <button type="submit" class="submit-btn">Complete Profile</button>
+        <button type="submit" class="btn btn-primary">Save Profile</button>
     </form>
 </div>
-</div>
-{% endblock %} 
+{% endblock %}
