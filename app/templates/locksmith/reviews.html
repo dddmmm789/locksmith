@@ -593,6 +593,25 @@
         border-radius: 4px;
         cursor: pointer;
     }
+
+    .reviews-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background: #00a082;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        background: #008c70;
+    }
 </style>
 {% endblock %}
 
@@ -643,6 +662,15 @@
             </div>
             {% endfor %}
         </div>
+    </div>
+
+    <div class="reviews-header">
+        <h2>Reviews</h2>
+        {% if job and job.status == 'completed' %}
+        <a href="{{ url_for('locksmith.job_review', tracking_id=job.tracking_id) }}" class="btn-primary">
+            Write a Review
+        </a>
+        {% endif %}
     </div>
 
     {% if not is_owner and not is_admin %}

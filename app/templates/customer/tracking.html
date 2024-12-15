@@ -6,22 +6,20 @@
     <title>Track Your Locksmith</title>
     
     <!-- External Dependencies -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=geometry"></script>
     
-    <!-- Styles -->
     <style>
-        /* CSS Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Base Styles */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
             color: #333;
+            line-height: 1.6;
         }
 
         .container {
@@ -30,7 +28,6 @@
             padding: 20px;
         }
 
-        /* Components */
         .professional-header {
             background: white;
             border-radius: 16px;
@@ -42,7 +39,370 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* ... rest of your styles ... */
+        .profile-photo {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .professional-info {
+            flex: 1;
+        }
+
+        .professional-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .stars {
+            color: #ffc107;
+        }
+
+        .rating-value {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .review-count {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-badge.completed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .eta-info {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .eta-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .eta-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .eta-value {
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .map-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #map {
+            height: 300px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .location-details {
+            margin-top: 16px;
+        }
+
+        .location-details h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .details-form {
+            margin-top: 12px;
+        }
+
+        .details-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .btn-save {
+            background: #00a082;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #008c70;
+        }
+
+        .address-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .btn-edit {
+            background: none;
+            border: none;
+            color: #00a082;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 4px 8px;
+        }
+
+        .btn-edit:hover {
+            text-decoration: underline;
+        }
+
+        .details-section {
+            border-top: 1px solid #eee;
+            padding-top: 16px;
+        }
+
+        .details-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-family: inherit;
+        }
+
+        #details-form {
+            margin-top: 12px;
+        }
+
+        #details-text {
+            margin: 8px 0;
+            white-space: pre-wrap;
+        }
+
+        .status-text {
+            margin-bottom: 16px;
+        }
+
+        .status-text h3 {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .destination {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 4px;
+        }
+
+        .arrival-time {
+            font-size: 2em;
+            color: #00a082;
+            margin: 24px 0;
+        }
+
+        .arrival-time .time {
+            font-weight: 600;
+        }
+
+        .trip-info {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 24px;
+        }
+
+        .status-timeline {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .status-icon.completed {
+            background: #00a082;
+            color: white;
+        }
+
+        .status-icon.current {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-label {
+            color: #666;
+        }
+
+        .address-confirmation {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .btn-confirm {
+            background: #00a082;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-confirm:hover {
+            background: #008c70;
+        }
+
+        .address-status {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .address-status.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .address-status .icon {
+            font-size: 1.2em;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+
+        .rating-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .rating-link:hover {
+            opacity: 0.8;
+        }
+
+        .status-card.completed {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .check-icon {
+            width: 64px;
+            height: 64px;
+            background: #00a082;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .review-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+            width: 100%;
+        }
+
+        .btn-review {
+            display: inline-block;
+            background: #00a082;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .btn-review:hover {
+            background: #008c70;
+        }
     </style>
 </head>
 <body>
@@ -55,33 +415,296 @@
                  onerror="this.src='{{ url_for('static', filename='images/default_profile.jpg') }}'">
             <div class="professional-info">
                 <h2>{{ job.locksmith.name }}</h2>
-                <div class="rating">★ {{ avg_rating|round(1) }}</div>
+                {% if job.locksmith.tagline %}
+                <p class="tagline">{{ job.locksmith.tagline }}</p>
+                {% endif %}
+                <a href="{{ url_for('locksmith.reviews', locksmith_id=job.locksmith.id) }}" class="rating-link">
+                    <div class="rating">
+                        <span class="stars">★</span>
+                        <span class="rating-value">{{ avg_rating }}</span>
+                        {% if total_reviews > 0 %}
+                        <span class="review-count">({{ total_reviews }} reviews)</span>
+                        {% endif %}
+                    </div>
+                </a>
             </div>
         </div>
 
-        <!-- ... rest of your HTML ... -->
+        <!-- Status Card -->
+        <div class="status-card {% if job.status == 'completed' %}completed{% endif %}">
+            {% if job.status == 'completed' %}
+                <div class="completion-message">
+                    <div class="check-icon">✓</div>
+                    <h2>Service Completed</h2>
+                    <p>Thank you for choosing {{ job.locksmith.name }}!</p>
+                    
+                    <div class="review-section">
+                        <h3>How was your experience?</h3>
+                        <p>Your feedback helps other customers make informed decisions.</p>
+                        <a href="{{ url_for('locksmith.job_review', tracking_id=job.tracking_id) }}" class="btn-review">
+                            Write a Review
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="status-text">
+                    <h3>{{ job.locksmith.name }} is on the way to</h3>
+                    <p class="destination">{{ job.customer_address }}</p>
+                </div>
+                
+                <div class="arrival-time">
+                    <span class="time">{{ initial_data.duration }}</span>
+                </div>
+                
+                <div class="trip-info">
+                    {{ initial_data.distance }}
+                </div>
+                
+                <div class="status-timeline">
+                    <div class="timeline-item">
+                        <span class="status-icon completed">✓</span>
+                        <span class="status-label">Order received</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="status-icon {% if job.status == 'active' %}current{% endif %}">🚗</span>
+                        <span class="status-label">On the way</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="status-icon {% if job.status == 'completed' %}completed{% endif %}">🎯</span>
+                        <span class="status-label">Arrived</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Map -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <div class="location-details">
+                <h3>Service Location</h3>
+                <p id="address">{{ job.customer_address }}</p>
+                
+                {% if job.address_confirmed %}
+                <div class="address-status confirmed">
+                    <span class="icon">✓</span> Address Confirmed
+                </div>
+                {% else %}
+                <div class="address-confirmation">
+                    <p>Is this address correct?</p>
+                    <div class="confirmation-buttons">
+                        <button onclick="confirmAddress()" class="btn-confirm">Yes, Correct</button>
+                        <button onclick="editAddress()" class="btn-edit">No, Edit Address</button>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="details-section">
+                    <h4>Additional Details</h4>
+                    {% if job.location_details %}
+                        <p id="details-text">{{ job.location_details }}</p>
+                    {% endif %}
+                    <button onclick="editDetails()" class="btn-edit">
+                        {% if job.location_details %}Edit{% else %}Add{% endif %} Details
+                    </button>
+                    
+                    <div id="details-form" style="display: none;">
+                        <textarea id="location-details" class="details-input" 
+                                  placeholder="e.g., Apartment number, gate code, parking instructions...">{{ job.location_details or '' }}</textarea>
+                        <button onclick="saveDetails()" class="btn-save">Save Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Scripts -->
     <script>
-        // Constants
-        const REFRESH_INTERVAL = 30000; // 30 seconds
+        let map;
+        const REFRESH_INTERVAL = 30000;
+
+        function initMap() {
+            const mapStyles = [
+                { "elementType": "geometry", "stylers": [{"color": "#ebe3cd"}] },
+                { "elementType": "labels.text.fill", "stylers": [{"color": "#523735"}] },
+                { "elementType": "labels.text.stroke", "stylers": [{"color": "#f5f1e6"}] },
+                { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [{"color": "#c9b2a6"}] },
+                { "featureType": "administrative.land_parcel", "elementType": "geometry.stroke", "stylers": [{"color": "#dcd2be"}] },
+                { "featureType": "administrative.land_parcel", "elementType": "labels", "stylers": [{"visibility": "off"}] },
+                { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{"color": "#dfd2ae"}] },
+                { "featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#dfd2ae"}] },
+                { "featureType": "poi", "elementType": "labels.text", "stylers": [{"visibility": "off"}] },
+                { "featureType": "poi.business", "stylers": [{"visibility": "off"}] },
+                { "featureType": "poi.park", "elementType": "geometry.fill", "stylers": [{"color": "#a5b076"}] },
+                { "featureType": "road", "elementType": "geometry", "stylers": [{"color": "#f5f1e6"}] },
+                { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#fdfcf8"}] },
+                { "featureType": "road.highway", "elementType": "geometry", "stylers": [{"color": "#f8c967"}] },
+                { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#e9bc62"}] },
+                { "featureType": "water", "elementType": "geometry.fill", "stylers": [{"color": "#b9d3c2"}] }
+            ];
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: { lat: 40.8714, lng: -73.9977 },
+                disableDefaultUI: true,
+                zoomControl: true,
+                styles: mapStyles
+            });
+
+            // Add destination marker
+            {% if initial_data.destination %}
+            const destinationMarker = new google.maps.Marker({
+                position: {
+                    lat: {{ initial_data.destination.lat }},
+                    lng: {{ initial_data.destination.lng }}
+                },
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#00a082',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 10
+                }
+            });
+
+            // Add starting point marker
+            const startMarker = new google.maps.Marker({
+                position: { lat: 40.8714, lng: -73.9977 },  // Bergenfield office
+                map: map,
+                icon: {
+                    url: '{{ url_for("static", filename="uploads/" + job.locksmith.profile_photo) }}',
+                    scaledSize: new google.maps.Size(40, 40),
+                    anchor: new google.maps.Point(20, 20)
+                }
+            });
+
+            // Draw route
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true,  // We'll use our own markers
+                polylineOptions: {
+                    strokeColor: '#00a082',
+                    strokeWeight: 4,
+                    strokeOpacity: 0.8
+                }
+            });
+
+            directionsService.route({
+                origin: "28 mallard court, Bergenfield, NJ 07631",
+                destination: "{{ job.customer_address }}",
+                travelMode: 'DRIVING'
+            }, (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    
+                    // Fit map to show entire route
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend(startMarker.getPosition());
+                    bounds.extend(destinationMarker.getPosition());
+                    map.fitBounds(bounds);
+                }
+            });
+            {% endif %}
+        }
 
         // Initialize map
-        function initMap() {
-            // ... your map initialization code ...
+        document.addEventListener('DOMContentLoaded', initMap);
+
+        function editAddress() {
+            const currentAddress = document.getElementById('address').textContent;
+            const newAddress = prompt('Update service address:', currentAddress);
+            
+            if (newAddress && newAddress !== currentAddress) {
+                fetch('/track/api/update-address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tracking_id: '{{ job.tracking_id }}',
+                        address: newAddress
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();  // Refresh the page
+                    } else {
+                        alert(data.error || 'Failed to update address');
+                    }
+                });
+            }
         }
 
-        // Update location
+        function editDetails() {
+            const formDiv = document.getElementById('details-form');
+            formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveDetails() {
+            const details = document.getElementById('location-details').value;
+            
+            fetch('/track/api/update-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tracking_id: '{{ job.tracking_id }}',
+                    details: details
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();  // Refresh to show updated details
+                } else {
+                    alert('Failed to save details');
+                }
+            });
+        }
+
+        function confirmAddress() {
+            fetch('/track/api/confirm-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tracking_id: '{{ job.tracking_id }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Replace confirmation buttons with status
+                    const locationDetails = document.querySelector('.location-details');
+                    const confirmation = document.querySelector('.address-confirmation');
+                    const status = document.createElement('div');
+                    status.className = 'address-status confirmed';
+                    status.innerHTML = '<span class="icon">✓</span> Address Confirmed';
+                    locationDetails.replaceChild(status, confirmation);
+                } else {
+                    alert('Failed to confirm address');
+                }
+            });
+        }
+
         function updateLocation() {
-            // ... your location update code ...
+            fetch(`/track/api/location/{{ job.tracking_id }}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update arrival info
+                        document.querySelector('.arrival-time .time').textContent = data.duration;
+                        document.querySelector('.trip-info').textContent = data.distance;
+                        
+                        // ... rest of the update code ...
+                    }
+                });
         }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            initMap();
-            setInterval(updateLocation, REFRESH_INTERVAL);
-        });
     </script>
 </body>
 </html> 

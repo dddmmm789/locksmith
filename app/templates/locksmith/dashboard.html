@@ -23,8 +23,24 @@
                     <div class="job-details">
                         <p><strong>Customer Phone:</strong> {{ job.customer_phone }}</p>
                         <p><strong>Address:</strong> {{ job.customer_address }}</p>
+                        {% if job.location_details %}
+                        <div class="additional-details">
+                            <strong>Additional Details:</strong>
+                            <p class="details-text">{{ job.location_details }}</p>
+                        </div>
+                        {% endif %}
                         <p><strong>Created:</strong> {{ job.created_at.strftime('%B %d, %Y %I:%M %p') }}</p>
                         
+                        <!-- Address confirmation status -->
+                        <p class="address-status">
+                            <strong>Address Status:</strong>
+                            {% if job.address_confirmed %}
+                            <span class="status-badge confirmed">✓ Confirmed</span>
+                            {% else %}
+                            <span class="status-badge pending">Pending Confirmation</span>
+                            {% endif %}
+                        </p>
+
                         <!-- Add tracking link and status -->
                         <div class="tracking-info">
                             <p>
@@ -77,6 +93,11 @@
                         <p><strong>Customer Phone:</strong> {{ job.customer_phone }}</p>
                         <p><strong>Address:</strong> {{ job.customer_address }}</p>
                         <p><strong>Completed:</strong> {{ job.completed_at.strftime('%B %d, %Y %I:%M %p') }}</p>
+                    </div>
+                    <div class="job-actions">
+                        <button onclick="reactivateJob('{{ job.tracking_id }}')" class="btn-reactivate">
+                            <i class="fas fa-undo"></i> Reactivate
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
@@ -494,6 +515,36 @@
     position: relative;
     background: #f8f9fa;
 }
+
+.status-badge.confirmed {
+    background: #d4edda;
+    color: #155724;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+.additional-details {
+    margin: 12px 0;
+    padding: 12px;
+    background: #fff3cd;
+    border-radius: 8px;
+    border-left: 4px solid #ffc107;
+}
+
+.details-text {
+    margin-top: 4px;
+    white-space: pre-wrap;
+    color: #666;
+}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=geometry"></script>
@@ -508,7 +559,7 @@ function completeJob(trackingId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            location.reload();  // Just reload the dashboard
         } else {
             alert(data.error || 'Failed to complete job');
         }
@@ -658,5 +709,19 @@ document.addEventListener('visibilitychange', function() {
         refreshActiveJobs();
     }
 });
+
+function reactivateJob(trackingId) {
+    fetch(`/locksmith/job/${trackingId}/reverse-completion`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Error reactivating job');
+        }
+    });
+}
 </script>
 {% endblock %} 

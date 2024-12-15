@@ -63,53 +63,53 @@ def profile():
 
 @bp.route('/job/new', methods=['GET', 'POST'])
 def new_job():
+    # First check if logged in
+    locksmith_id = session.get('locksmith_id')
+    if not locksmith_id:
+        flash('Please log in first', 'error')
+        return redirect(url_for('locksmith.login'))
+
     if request.method == 'POST':
-        customer_phone = request.form.get('customer_phone', '')
-        customer_address = request.form.get('customer_address', '')
-        locksmith_id = request.form.get('locksmith_id')
+        # Get form data
+        customer_phone = request.form.get('customer_phone')
+        customer_address = request.form.get('customer_address')
         
-        print(f"Creating job - Phone: {customer_phone}, Address: {customer_address}, Locksmith: {locksmith_id}")
+        print(f"DEBUG - Creating job:")
+        print(f"Locksmith ID: {locksmith_id}")
+        print(f"Customer Phone: {customer_phone}")
+        print(f"Customer Address: {customer_address}")
+        
+        if not all([customer_phone, customer_address]):
+            flash('Please fill in all required fields', 'error')
+            return redirect(url_for('locksmith.new_job'))
         
         try:
-            # Create job regardless of phone/address validation
+            # Create new job
             job = Job(
                 customer_phone=customer_phone,
                 customer_address=customer_address,
-                locksmith_id=int(locksmith_id),
-                status='active'
+                locksmith_id=locksmith_id,
+                status='active',
+                created_at=datetime.utcnow()
             )
             
             db.session.add(job)
             db.session.commit()
-            print(f"Created job with ID: {job.id}, Tracking ID: {job.tracking_id}")
             
-            # Try to format phone and send SMS, but don't fail if it doesn't work
-            try:
-                formatted_phone = format_phone_number(customer_phone)
-                tracking_url = url_for('customer.tracking', tracking_id=job.tracking_id, _external=True)
-                print(f"Tracking URL: {tracking_url}")
-                
-                client = Client(current_app.config['TWILIO_ACCOUNT_SID'],
-                              current_app.config['TWILIO_AUTH_TOKEN'])
-                
-                message = client.messages.create(
-                    body=f'Track your locksmith here: {tracking_url}',
-                    from_=current_app.config['TWILIO_PHONE_NUMBER'],
-                    to=formatted_phone
-                )
-                flash('Job created and tracking link sent!', 'success')
-            except Exception as sms_error:
-                print(f"SMS Error: {str(sms_error)}")
-                flash('Job created but could not send tracking link', 'warning')
+            print(f"DEBUG - Job created successfully:")
+            print(f"Job ID: {job.id}")
+            print(f"Tracking ID: {job.tracking_id}")
             
+            flash('Job created successfully!', 'success')
             return redirect(url_for('locksmith.dashboard'))
             
         except Exception as e:
             db.session.rollback()
-            print(f"Error creating job: {str(e)}")
-            flash('Error creating job', 'error')
-            return redirect(url_for('locksmith.dashboard'))
+            print(f"DEBUG - Error creating job: {str(e)}")
+            flash(f'Error creating job: {str(e)}', 'error')
+            return redirect(url_for('locksmith.new_job'))
     
+    # GET request - show form
     return render_template('locksmith/job_form.html')
 
 @bp.route('/dashboard')
@@ -171,51 +171,15 @@ def send_tracking_link(tracking_id):
 
 @bp.route('/job/<tracking_id>/complete', methods=['POST'])
 def complete_job(tracking_id):
-    job = Job.query.filter_by(tracking_id=tracking_id).first_or_404()
-    
     try:
+        job = Job.query.filter_by(tracking_id=tracking_id).first_or_404()
         job.status = 'completed'
         job.completed_at = datetime.utcnow()
         db.session.commit()
-
-        # Send thank you and review request SMS
-        try:
-            review_url = url_for('locksmith.job_review', 
-                               tracking_id=tracking_id,
-                               _external=True)
-            
-            message = (
-                f"Thank you for choosing {job.locksmith.name} for your locksmith service! "
-                f"We'd love to hear about your experience. "
-                f"Please leave a review here: {review_url}"
-            )
-            
-            client = Client(current_app.config['TWILIO_ACCOUNT_SID'],
-                          current_app.config['TWILIO_AUTH_TOKEN'])
-            
-            sms_response = client.messages.create(
-                body=message,
-                from_=current_app.config['TWILIO_PHONE_NUMBER'],
-                to=job.customer_phone
-            )
-            
-            return jsonify({
-                'success': True,
-                'message': 'Job completed and review request sent'
-            })
-            
-        except Exception as sms_error:
-            return jsonify({
-                'success': True,
-                'message': f'Job completed but SMS failed: {str(sms_error)}'
-            })
-            
+        return jsonify({'success': True})
     except Exception as e:
         db.session.rollback()
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @bp.route('/reviews/<int:locksmith_id>')
 def reviews(locksmith_id):
@@ -475,8 +439,8 @@ def debug():
 @bp.route('/update-profile/<int:id>', methods=['POST'])
 def update_profile(id):
     if 'locksmith_id' not in session or session['locksmith_id'] != id:
-        flash('Invalid access', 'error')
-        return redirect(url_for('locksmith.signup'))
+        flash('Please log in to update your profile', 'error')
+        return redirect(url_for('locksmith.login'))
     
     locksmith = Locksmith.query.get_or_404(id)
     
@@ -486,10 +450,6 @@ def update_profile(id):
         locksmith.years_experience = request.form.get('experience')
         locksmith.license_number = request.form.get('license')
         locksmith.service_areas = ','.join(request.form.getlist('areas[]'))
-        
-        # Set application date if not already set
-        if not locksmith.application_date:
-            locksmith.application_date = datetime.utcnow()
         
         # Handle profile photo
         photo = request.files.get('profile_photo')
@@ -503,56 +463,24 @@ def update_profile(id):
         db.session.commit()
         flash('Profile updated successfully!', 'success')
         
+        # Redirect to dashboard instead of application status
+        return redirect(url_for('locksmith.dashboard'))
+        
     except Exception as e:
         db.session.rollback()
         flash('Error updating profile', 'error')
-        print(f"Error updating profile: {str(e)}")
-    
-    return redirect(url_for('locksmith.application_status', id=id))
-
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        phone_number = request.form.get('phone_number')
-        otp = request.form.get('otp')
-        
-        try:
-            phone_number = format_phone_number(phone_number)
-        except:
-            flash('Invalid phone number format', 'error')
-            return redirect(url_for('locksmith.login'))
-        
-        locksmith = Locksmith.query.filter_by(phone_number=phone_number).first()
-        
-        if not locksmith:
-            flash('No account found with this phone number', 'error')
-            return redirect(url_for('locksmith.login'))
-            
-        if locksmith.status != 'approved':
-            flash('Your application is still pending approval', 'error')
-            return redirect(url_for('locksmith.login'))
-            
-        # Debug mode: Accept "123456" as valid OTP
-        if current_app.debug and otp == "123456":
-            session['locksmith_id'] = locksmith.id
-            session.modified = True
-            return redirect(url_for('locksmith.dashboard'))
-            
-        # Production mode: Check actual OTP
-        if locksmith.otp_code != otp:
-            flash('Invalid verification code', 'error')
-            return redirect(url_for('locksmith.login'))
-            
-        session['locksmith_id'] = locksmith.id
-        session.modified = True
         return redirect(url_for('locksmith.dashboard'))
-    
+
+@bp.route('/login', methods=['GET'])
+def login():
+    if 'locksmith_id' in session:
+        return redirect(url_for('locksmith.dashboard'))
     return render_template('locksmith/login.html')
 
 @bp.route('/edit-profile/<int:id>', methods=['GET'])
 def edit_profile(id):
     if 'locksmith_id' not in session or session['locksmith_id'] != id:
-        flash('Invalid access', 'error')
+        flash('Please log in to edit your profile', 'error')
         return redirect(url_for('locksmith.login'))
     
     locksmith = Locksmith.query.get_or_404(id)
@@ -891,3 +819,48 @@ def login_verify():
         
     except Exception as e:
         return jsonify({'success': False, 'error': 'Login failed'})
+
+@bp.route('/debug/check-locksmith/<phone>')
+def debug_check_locksmith(phone):
+    locksmith = Locksmith.query.filter_by(phone_number=phone).first()
+    if not locksmith:
+        return jsonify({'exists': False})
+    return jsonify({
+        'exists': True,
+        'id': locksmith.id,
+        'status': locksmith.status,
+        'phone_verified': locksmith.phone_verified,
+        'otp_code': locksmith.otp_code if current_app.debug else None,
+        'otp_expires_at': str(locksmith.otp_expires_at) if locksmith.otp_expires_at else None
+    })
+
+@bp.route('/debug/test-job')
+def test_job_creation():
+    locksmith_id = session.get('locksmith_id')
+    if not locksmith_id:
+        return jsonify({
+            'error': 'Not logged in',
+            'session_data': dict(session)
+        })
+    
+    try:
+        job = Job(
+            customer_phone='+11234567890',
+            customer_address='Test Address',
+            locksmith_id=locksmith_id,
+            status='active'
+        )
+        db.session.add(job)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'job_id': job.id,
+            'tracking_id': job.tracking_id,
+            'locksmith_id': locksmith_id
+        })
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'locksmith_id': locksmith_id
+        })
